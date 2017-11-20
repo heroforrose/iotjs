@@ -113,6 +113,10 @@ bool iotjs_initialize(iotjs_environment_t* env) {
   const jerry_value_t process = iotjs_module_get("process");
   iotjs_jval_set_property_jval(global, "process", process);
 
+  // Initialize builtin require module.
+  const jerry_value_t require = iotjs_module_get("require");
+  iotjs_jval_set_property_jval(global, "require", require);
+
   // Release the global object
   jerry_release_value(global);
 

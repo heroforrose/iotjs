@@ -13,6 +13,38 @@
  * limitations under the License.
  */
 
+/**
+  function Module(id) {
+    this.id = id;
+    this.exports = {};
+  }
+
+
+  Module.cache = {};
+
+
+  Module.require = function(id) {
+    if (id == 'native') {
+      return Module;
+    }
+
+    if (Module.cache[id]) {
+      return Module.cache[id].exports;
+    }
+
+    var module = new Module(id);
+
+    Module.cache[id] = module;
+    module.compile();
+
+    return module.exports;
+  };
+
+
+  Module.prototype.compile = function() {
+    process.compileModule(this, Module.require);
+  };
+*/
 
 var Builtin = require('builtin');
 var fs = Builtin.require('fs');
@@ -26,7 +58,6 @@ function Module(id, parent) {
 }
 
 module.exports = Module;
-
 
 Module.cache = {};
 // Cache to store not yet compiled remote modules
@@ -248,8 +279,8 @@ Module.compileRemoteSource = function(filename, source) {
 
 
 Module.prototype.compile = function(filename, source) {
-    var fn = Builtin.compile(filename, source);
-    fn.call(this.exports, this.exports, this.require.bind(this), this);
+  var fn = Builtin.compile(filename, source);
+  fn.call(this.exports, this.exports, this.require.bind(this), this);
 };
 
 
