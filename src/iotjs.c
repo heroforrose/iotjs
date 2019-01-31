@@ -178,7 +178,9 @@ void iotjs_run(iotjs_environment_t* env) {
 
 static int iotjs_start(iotjs_environment_t* env) {
   iotjs_environment_set_state(env, kRunningMain);
+#if ENABLE_NAPI
   iotjs_setup_napi();
+#endif
   // Load and call iotjs.js.
   iotjs_run(env);
 
@@ -234,7 +236,9 @@ void iotjs_end(iotjs_environment_t* env) {
 void iotjs_terminate(iotjs_environment_t* env) {
   // Release builtin modules.
   iotjs_module_list_cleanup();
+#if ENABLE_NAPI
   iotjs_cleanup_napi();
+#endif
   // Release JerryScript engine.
   jerry_cleanup();
 }
