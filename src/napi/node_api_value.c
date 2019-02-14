@@ -132,13 +132,21 @@ napi_status napi_create_type_error(napi_env env, napi_value code,
   return napi_create_error_helper(JERRY_ERROR_TYPE, env, code, msg, result);
 }
 
-#define DEF_NAPI_NUMBER_CONVERT_FROM_C_TYPE(type, name)      \
-  napi_status napi_create_##name(napi_env env, type value,   \
-                                 napi_value* result) {       \
-    NAPI_TRY_ENV(env);                                       \
-    JERRYX_CREATE(jval, jerry_create_number((double)value)); \
-    NAPI_ASSIGN(result, AS_NAPI_VALUE(jval));                \
-    NAPI_RETURN(napi_ok);                                    \
+static napi_status
+napi_number_convert_from_c_type_helper(napi_env env, double value,
+                                       napi_value* result) {
+  NAPI_TRY_ENV(env);
+  JERRYX_CREATE(jval, jerry_create_number(value));
+  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval));
+  NAPI_RETURN(napi_ok);
+}
+
+#define DEF_NAPI_NUMBER_CONVERT_FROM_C_TYPE(type, name)          \
+  napi_status napi_create_##name(napi_env env, type value,       \
+                                 napi_value* result) {           \
+    return napi_number_convert_from_c_type_helper(env,           \
+                                                  (double)value, \
+                                                  result);       \
   }
 
 DEF_NAPI_NUMBER_CONVERT_FROM_C_TYPE(int32_t, int32);
