@@ -538,7 +538,7 @@ try {
       stream.emit('close');
     });
   }
-} catch(e) {
+} catch (e) {
 }
 
 

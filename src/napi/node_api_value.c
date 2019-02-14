@@ -80,46 +80,57 @@ napi_status napi_create_object(napi_env env, napi_value* result) {
   NAPI_RETURN(napi_ok);
 }
 
-#define DEF_NAPI_CREATE_ERROR(type, jerry_error_type)                         \
-  napi_status napi_create_##type(napi_env env, napi_value code,               \
-                                 napi_value msg, napi_value* result) {        \
-    NAPI_TRY_ENV(env);                                                        \
-                                                                              \
-    jerry_value_t jval_code = AS_JERRY_VALUE(code);                           \
-    jerry_value_t jval_msg = AS_JERRY_VALUE(msg);                             \
-                                                                              \
-    NAPI_TRY_TYPE(string, jval_msg);                                          \
-                                                                              \
-    jerry_size_t msg_size = jerry_get_utf8_string_size(jval_msg);             \
-    jerry_char_t raw_msg[msg_size + 1];                                       \
-    jerry_size_t written_size =                                               \
-        jerry_string_to_utf8_char_buffer(jval_msg, raw_msg, msg_size);        \
-    NAPI_WEAK_ASSERT(napi_invalid_arg, written_size == msg_size);             \
-    raw_msg[msg_size] = '\0';                                                 \
-                                                                              \
-    jerry_value_t jval_error = jerry_create_error(jerry_error_type, raw_msg); \
-    jval_error = jerry_create_error_from_value(jval_error, true);             \
-    /**                                                                       \
-     * reference count of error flag cleared jerry_value_t is separated       \
-     * from its error reference, so it has be added to scope after clearing   \
-     * error flag.                                                            \
-     */                                                                       \
-    jerryx_create_handle(jval_error);                                         \
-    /** code has to be an JS string type, thus it can not be an number 0 */   \
-    if (code != NULL) {                                                       \
-      NAPI_TRY_TYPE(string, jval_code);                                       \
-      iotjs_jval_set_property_jval(jval_error, IOTJS_MAGIC_STRING_CODE,       \
-                                   jval_code);                                \
-    }                                                                         \
-    NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_error));                           \
-                                                                              \
-    NAPI_RETURN(napi_ok);                                                     \
-  }
+static napi_status napi_create_error_helper(jerry_error_t jerry_error_type,
+                                            napi_env env, napi_value code,
+                                            napi_value msg,
+                                            napi_value* result) {
+  NAPI_TRY_ENV(env);
 
-DEF_NAPI_CREATE_ERROR(error, JERRY_ERROR_COMMON);
-DEF_NAPI_CREATE_ERROR(type_error, JERRY_ERROR_TYPE);
-DEF_NAPI_CREATE_ERROR(range_error, JERRY_ERROR_RANGE);
-#undef DEF_NAPI_CREATE_ERROR
+  jerry_value_t jval_code = AS_JERRY_VALUE(code);
+  jerry_value_t jval_msg = AS_JERRY_VALUE(msg);
+
+  NAPI_TRY_TYPE(string, jval_msg);
+
+  jerry_size_t msg_size = jerry_get_utf8_string_size(jval_msg);
+  jerry_char_t raw_msg[msg_size + 1];
+  jerry_size_t written_size =
+      jerry_string_to_utf8_char_buffer(jval_msg, raw_msg, msg_size);
+  NAPI_WEAK_ASSERT(napi_invalid_arg, written_size == msg_size);
+  raw_msg[msg_size] = '\0';
+
+  jerry_value_t jval_error = jerry_create_error(jerry_error_type, raw_msg);
+  jval_error = jerry_create_error_from_value(jval_error, true);
+  /**
+   * reference count of error flag cleared jerry_value_t is separated
+   * from its error reference, so it has be added to scope after clearing
+   * error flag.
+   */
+  jerryx_create_handle(jval_error);
+  /** code has to be an JS string type, thus it can not be an number 0 */
+  if (code != NULL) {
+    NAPI_TRY_TYPE(string, jval_code);
+    iotjs_jval_set_property_jval(jval_error, IOTJS_MAGIC_STRING_CODE,
+                                 jval_code);
+  }
+  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_error));
+
+  NAPI_RETURN(napi_ok);
+}
+
+napi_status napi_create_error(napi_env env, napi_value code, napi_value msg,
+                              napi_value* result) {
+  return napi_create_error_helper(JERRY_ERROR_COMMON, env, code, msg, result);
+}
+
+napi_status napi_create_range_error(napi_env env, napi_value code,
+                                    napi_value msg, napi_value* result) {
+  return napi_create_error_helper(JERRY_ERROR_RANGE, env, code, msg, result);
+}
+
+napi_status napi_create_type_error(napi_env env, napi_value code,
+                                   napi_value msg, napi_value* result) {
+  return napi_create_error_helper(JERRY_ERROR_TYPE, env, code, msg, result);
+}
 
 #define DEF_NAPI_NUMBER_CONVERT_FROM_C_TYPE(type, name)      \
   napi_status napi_create_##name(napi_env env, type value,   \
