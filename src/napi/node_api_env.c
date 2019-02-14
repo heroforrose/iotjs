@@ -120,21 +120,27 @@ napi_status napi_throw(napi_env env, napi_value error) {
   return napi_ok;
 }
 
-#define DEF_NAPI_THROWS(type, jerry_error_type)                     \
-  napi_status napi_throw_##type(napi_env env, const char* code,     \
-                                const char* msg) {                  \
-    NAPI_TRY_ENV(env);                                              \
-    NAPI_TRY_NO_PENDING_EXCEPTION(env);                             \
-                                                                    \
-    jerry_value_t jval_error =                                      \
-        jerry_create_error(jerry_error_type, (jerry_char_t*)msg);   \
-    if (code != NULL) {                                             \
-      jval_error = jerry_get_value_from_error(jval_error, true);    \
-      iotjs_jval_set_property_string_raw(jval_error, "code", code); \
-      jval_error = jerry_create_error_from_value(jval_error, true); \
-    }                                                               \
-    jerryx_create_handle(jval_error);                               \
-    return napi_throw(env, AS_NAPI_VALUE(jval_error));              \
+static napi_status napi_throw_helper(jerry_error_t jerry_error_type,
+                                     napi_env env, const char* code,
+                                     const char* msg) {
+  NAPI_TRY_ENV(env);
+  NAPI_TRY_NO_PENDING_EXCEPTION(env);
+
+  jerry_value_t jval_error =
+      jerry_create_error(jerry_error_type, (jerry_char_t*)msg);
+  if (code != NULL) {
+    jval_error = jerry_get_value_from_error(jval_error, true);
+    iotjs_jval_set_property_string_raw(jval_error, "code", code);
+    jval_error = jerry_create_error_from_value(jval_error, true);
+  }
+  jerryx_create_handle(jval_error);
+  return napi_throw(env, AS_NAPI_VALUE(jval_error));
+}
+
+#define DEF_NAPI_THROWS(type, jerry_error_type)                 \
+  napi_status napi_throw_##type(napi_env env, const char* code, \
+                                const char* msg) {              \
+    return napi_throw_helper(jerry_error_type, env, code, msg); \
   }
 
 DEF_NAPI_THROWS(error, JERRY_ERROR_COMMON);
@@ -164,7 +170,6 @@ napi_status napi_fatal_exception(napi_env env, napi_value err) {
   /** should not clear last error info */
   return napi_ok;
 }
-
 
 // Methods to support catching exceptions
 napi_status napi_is_exception_pending(napi_env env, bool* result) {
@@ -201,7 +206,6 @@ napi_status napi_get_and_clear_last_exception(napi_env env,
   /** should not clear last error info */
   return napi_ok;
 }
-
 
 napi_status napi_get_last_error_info(napi_env env,
                                      const napi_extended_error_info** result) {
