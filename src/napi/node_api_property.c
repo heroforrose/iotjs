@@ -30,8 +30,7 @@ napi_status napi_get_property_names(napi_env env, napi_value object,
     NAPI_RETURN(napi_invalid_arg, NULL);
   }
 
-  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_keys));
-  NAPI_RETURN(napi_ok);
+  return napi_assign_nvalue(jval_keys, result);
 }
 
 napi_status napi_set_property(napi_env env, napi_value object, napi_value key,
@@ -70,8 +69,7 @@ napi_status napi_get_property(napi_env env, napi_value object, napi_value key,
     NAPI_RETURN(napi_invalid_arg, NULL);
   }
 
-  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_ret));
-  NAPI_RETURN(napi_ok);
+  return napi_assign_nvalue(jval_ret, result);
 }
 
 napi_status napi_has_property(napi_env env, napi_value object, napi_value key,
@@ -184,8 +182,7 @@ napi_status napi_get_element(napi_env env, napi_value object, uint32_t index,
     jerry_release_value(jval_ret);
     NAPI_RETURN(napi_invalid_arg, NULL);
   }
-  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_ret));
-  NAPI_RETURN(napi_ok);
+  return napi_assign_nvalue(jval_ret, result);
 }
 
 napi_status napi_has_element(napi_env env, napi_value object, uint32_t index,

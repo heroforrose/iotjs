@@ -104,8 +104,7 @@ napi_status napi_create_function(napi_env env, const char* utf8name,
   function_info->cb = cb;
   function_info->data = data;
 
-  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_func));
-  NAPI_RETURN(napi_ok);
+  return napi_assign_nvalue(jval_func, result);
 }
 
 napi_status napi_call_function(napi_env env, napi_value recv, napi_value func,
@@ -131,8 +130,7 @@ napi_status napi_call_function(napi_env env, napi_value recv, napi_value func,
                 "Unexpected error flag on jerry_call_function.");
   }
 
-  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_ret));
-  NAPI_RETURN(napi_ok);
+  return napi_assign_nvalue(jval_ret, result);
 }
 
 napi_status napi_get_cb_info(napi_env env, napi_callback_info cbinfo,
@@ -168,11 +166,7 @@ napi_status napi_get_new_target(napi_env env, napi_callback_info cbinfo,
   jerry_value_t jval_this = callback_info->jval_this;
   jerry_value_t jval_target = callback_info->jval_func;
   bool is_instance = jerry_value_instanceof(jval_this, jval_target);
-  if (!is_instance) {
-    NAPI_ASSIGN(result, NULL);
-  } else {
-    NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_target));
-  }
+  NAPI_ASSIGN(result, is_instance ? AS_NAPI_VALUE(jval_target) : NULL);
   NAPI_RETURN(napi_ok);
 }
 
@@ -197,6 +191,5 @@ napi_status napi_new_instance(napi_env env, napi_value constructor, size_t argc,
                 "Unexpected error flag on jerry_construct_object.");
   }
 
-  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_ret));
-  NAPI_RETURN(napi_ok);
+  return napi_assign_nvalue(jval_ret, result);
 }

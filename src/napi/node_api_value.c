@@ -61,9 +61,8 @@ napi_status napi_create_buffer_copy(napi_env env, size_t size, const void* data,
   iotjs_bufferwrap_copy(buf_wrap, (char*)data, size);
 
   NAPI_ASSIGN(result_data, buf_wrap->buffer);
-  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_buf));
 
-  NAPI_RETURN(napi_ok);
+  return napi_assign_nvalue(jval_buf, result);
 }
 
 napi_status napi_create_external_buffer(napi_env env, size_t length, void* data,
