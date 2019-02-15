@@ -18,7 +18,8 @@
 
 static void iotjs_uv_work_cb(uv_work_t* req) {
   iotjs_async_work_t* async_work = (iotjs_async_work_t*)req->data;
-  NAPI_ASSERT(async_work != NULL, "Unexpected null async work on uv_work_cb.");
+  IOTJS_ASSERT(async_work != NULL);
+
   if (async_work->execute != NULL) {
     async_work->execute(async_work->env, async_work->data);
   }
@@ -26,8 +27,8 @@ static void iotjs_uv_work_cb(uv_work_t* req) {
 
 static void iotjs_uv_work_after_cb(uv_work_t* req, int status) {
   iotjs_async_work_t* async_work = (iotjs_async_work_t*)req->data;
-  NAPI_ASSERT(async_work != NULL,
-              "Unexpected null async work on uv_work_after_cb.");
+  IOTJS_ASSERT(async_work != NULL);
+
   napi_status cb_status;
   if (status == 0) {
     cb_status = napi_ok;

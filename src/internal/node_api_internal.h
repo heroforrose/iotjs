@@ -28,12 +28,6 @@
 #define AS_JERRY_VALUE(nvalue) (jerry_value_t)(uintptr_t) nvalue
 #define AS_NAPI_VALUE(jval) (napi_value)(uintptr_t) jval
 
-#define NAPI_ASSERT(assertion, message)                                 \
-  if (!(assertion)) {                                                   \
-    napi_fatal_error(__FILE__ ":" TOSTRING(__LINE__), NAPI_AUTO_LENGTH, \
-                     message, NAPI_AUTO_LENGTH);                        \
-  }
-
 /**
  * MARK: - N-API Returns machenism:
  * If any non-napi-ok status code is returned in N-API functions, there
@@ -42,18 +36,18 @@
  * called.
  */
 #define NAPI_RETURN_WITH_MSG(status, message)                                \
-  {                                                                          \
+  do {                                                                       \
     iotjs_napi_set_error_info(iotjs_get_current_napi_env(), status, message, \
                               0, NULL);                                      \
     return status;                                                           \
-  }
+  } while (0)
 
 #define NAPI_RETURN_NO_MSG(status)                                           \
-  {                                                                          \
+  do {                                                                       \
     iotjs_napi_set_error_info(iotjs_get_current_napi_env(), status, NULL, 0, \
                               NULL);                                         \
     return status;                                                           \
-  }
+  } while (0)
 
 #define NAPI_RETURN_MACRO_CHOOSER(...) \
   GET_3TH_ARG(__VA_ARGS__, NAPI_RETURN_WITH_MSG, NAPI_RETURN_NO_MSG, )
@@ -100,22 +94,23 @@
 /**
  * A convenience weak assertion on N-API Env matching.
  */
-#define NAPI_TRY_ENV(env)                                 \
-  NAPI_TRY_THREAD(env);                                   \
-  if (env != iotjs_get_current_napi_env()) {              \
-    NAPI_RETURN(napi_invalid_arg, "N-API env not match.") \
-  }
+#define NAPI_TRY_ENV(env)                                  \
+  do { \
+    NAPI_TRY_THREAD(env);                                    \
+    if (env != iotjs_get_current_napi_env()) {               \
+      NAPI_RETURN(napi_invalid_arg, "N-API env not match."); \
+    } \
+  } while (0)
 
 /**
  * A convenience weak assertion on if current executing thread matches main loop
  * thread.
  */
-#define NAPI_TRY_THREAD(env)                                               \
-  do {                                                                     \
-    uv_thread_t current = uv_thread_self();                                \
-    NAPI_ASSERT(uv_thread_equal(iotjs_get_napi_env_thread(env), &current), \
-                "Expected to be ran on main thread.");                     \
-  } while (0);
+#define NAPI_TRY_THREAD(env)                                                 \
+  do {                                                                       \
+    uv_thread_t current = uv_thread_self();                                  \
+    IOTJS_ASSERT(uv_thread_equal(iotjs_get_napi_env_thread(env), &current)); \
+  } while (0)
 
 /**
  * A convenience weak assertion expecting there is no pending exception

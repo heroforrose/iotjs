@@ -24,8 +24,7 @@ static jerry_value_t iotjs_napi_function_handler(
     const jerry_value_t args_p[], const jerry_length_t args_cnt) {
   iotjs_function_info_t* function_info =
       NAPI_TRY_GET_FUNCTION_INFO(function_obj);
-  NAPI_ASSERT(function_info != NULL,
-              "Unexpected null function info on JerryScript callback.");
+  IOTJS_ASSERT(function_info != NULL);
 
   napi_env env = function_info->env;
 
