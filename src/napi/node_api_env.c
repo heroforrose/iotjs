@@ -32,8 +32,14 @@ inline napi_env iotjs_get_current_napi_env() {
   return (napi_env)&current_env;
 }
 
-inline uv_thread_t* iotjs_get_napi_env_thread(napi_env env) {
+static inline uv_thread_t* iotjs_get_napi_env_thread(napi_env env) {
   return &((iotjs_napi_env_t*)env)->main_thread;
+}
+
+bool napi_try_env_helper(napi_env env) {
+  uv_thread_t current = uv_thread_self();
+  IOTJS_ASSERT(uv_thread_equal(iotjs_get_napi_env_thread(env), &current));
+  return (env != iotjs_get_current_napi_env());
 }
 
 inline bool iotjs_napi_is_exception_pending(napi_env env) {

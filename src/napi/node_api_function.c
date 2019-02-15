@@ -20,10 +20,10 @@
 #include "node_api.h"
 
 static jerry_value_t iotjs_napi_function_handler(
-    const jerry_value_t function_obj, const jerry_value_t this_val,
+    const jerry_value_t func_obj, const jerry_value_t this_val,
     const jerry_value_t args_p[], const jerry_length_t args_cnt) {
-  iotjs_function_info_t* function_info =
-      NAPI_TRY_GET_FUNCTION_INFO(function_obj);
+  iotjs_function_info_t* function_info = (iotjs_function_info_t*)
+      iotjs_try_get_object_native_info(func_obj, sizeof(func_obj));
   IOTJS_ASSERT(function_info != NULL);
 
   napi_env env = function_info->env;
@@ -35,7 +35,7 @@ static jerry_value_t iotjs_napi_function_handler(
   callback_info->argc = args_cnt;
   callback_info->argv = (jerry_value_t*)args_p;
   callback_info->jval_this = this_val;
-  callback_info->jval_func = function_obj;
+  callback_info->jval_func = func_obj;
   callback_info->function_info = function_info;
 
   callback_info->handle_scope = scope;
@@ -97,7 +97,9 @@ napi_status napi_create_function(napi_env env, const char* utf8name,
       jerry_create_external_function(iotjs_napi_function_handler);
   jerryx_create_handle(jval_func);
 
-  iotjs_function_info_t* function_info = NAPI_GET_FUNCTION_INFO(jval_func);
+  iotjs_function_info_t* function_info =
+      (iotjs_function_info_t*)iotjs_get_object_native_info(jval_func,
+                                                           sizeof(jval_func));
   function_info->env = env;
   function_info->cb = cb;
   function_info->data = data;

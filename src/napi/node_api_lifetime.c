@@ -133,7 +133,7 @@ napi_status napi_create_reference(napi_env env, napi_value value,
   NAPI_WEAK_ASSERT(napi_invalid_arg, result != NULL);
 
   jerry_value_t jval = AS_JERRY_VALUE(value);
-  iotjs_object_info_t* info = NAPI_GET_OBJECT_INFO(jval);
+  iotjs_object_info_t* info = iotjs_get_object_native_info(jval, sizeof(jval));
 
   iotjs_reference_t* ref = IOTJS_ALLOC(iotjs_reference_t);
   ref->refcount = initial_refcount;
@@ -164,7 +164,8 @@ napi_status napi_delete_reference(napi_env env, napi_ref ref) {
   iotjs_reference_t* iotjs_ref = (iotjs_reference_t*)ref;
   if (iotjs_ref->jval != AS_JERRY_VALUE(NULL)) {
     jerry_value_t jval = iotjs_ref->jval;
-    iotjs_object_info_t* info = NAPI_GET_OBJECT_INFO(jval);
+    iotjs_object_info_t* info =
+        iotjs_get_object_native_info(jval, sizeof(jval));
 
     bool found = false;
     iotjs_reference_t* comp = info->ref_start;
@@ -226,8 +227,7 @@ napi_status napi_get_reference_value(napi_env env, napi_ref ref,
                                      napi_value* result) {
   NAPI_TRY_ENV(env);
   iotjs_reference_t* iotjs_ref = (iotjs_reference_t*)ref;
-  NAPI_ASSIGN(result, AS_NAPI_VALUE(iotjs_ref->jval));
-  NAPI_RETURN(napi_ok);
+  return napi_assign_nvalue(iotjs_ref->jval, result);
 }
 
 napi_status napi_open_callback_scope(napi_env env, napi_value resource_object,
