@@ -23,7 +23,7 @@ static jerry_value_t iotjs_napi_function_handler(
     const jerry_value_t func_obj, const jerry_value_t this_val,
     const jerry_value_t args_p[], const jerry_length_t args_cnt) {
   iotjs_function_info_t* function_info = (iotjs_function_info_t*)
-      iotjs_try_get_object_native_info(func_obj, sizeof(func_obj));
+      iotjs_try_get_object_native_info(func_obj, sizeof(iotjs_function_info_t));
   IOTJS_ASSERT(function_info != NULL);
 
   napi_env env = function_info->env;
@@ -97,9 +97,8 @@ napi_status napi_create_function(napi_env env, const char* utf8name,
       jerry_create_external_function(iotjs_napi_function_handler);
   jerryx_create_handle(jval_func);
 
-  iotjs_function_info_t* function_info =
-      (iotjs_function_info_t*)iotjs_get_object_native_info(jval_func,
-                                                           sizeof(jval_func));
+  iotjs_function_info_t* function_info = (iotjs_function_info_t*)
+      iotjs_get_object_native_info(jval_func, sizeof(iotjs_function_info_t));
   function_info->env = env;
   function_info->cb = cb;
   function_info->data = data;
