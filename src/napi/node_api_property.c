@@ -209,17 +209,21 @@ napi_status iotjs_napi_prop_desc_to_jdesc(napi_env env,
                                           const napi_property_descriptor* ndesc,
                                           jerry_property_descriptor_t* jdesc) {
   napi_status status;
-#define JATTR_FROM_NAPI_ATTR(prop_attr)       \
-  if (ndesc->attributes & napi_##prop_attr) { \
-    jdesc->is_##prop_attr##_defined = true;   \
-    jdesc->is_##prop_attr = true;             \
+
+  if (ndesc->attributes & napi_configurable) {
+    jdesc->is_configurable_defined = true;
+    jdesc->is_configurable = true;
   }
 
-  JATTR_FROM_NAPI_ATTR(writable);
-  JATTR_FROM_NAPI_ATTR(enumerable);
-  JATTR_FROM_NAPI_ATTR(configurable);
+  if (ndesc->attributes & napi_enumerable) {
+    jdesc->is_enumerable_defined = true;
+    jdesc->is_enumerable = true;
+  }
 
-#undef JATTR_FROM_NAPI_ATTR
+  if (ndesc->attributes & napi_writable) {
+    jdesc->is_writable_defined = true;
+    jdesc->is_writable = true;
+  }
 
   if (ndesc->value != NULL) {
     jdesc->is_value_defined = true;
@@ -238,25 +242,29 @@ napi_status iotjs_napi_prop_desc_to_jdesc(napi_env env,
     NAPI_RETURN(napi_ok);
   }
 
-#define JACCESSOR_FROM_NAPI_ATTR(access)                                       \
-  do {                                                                         \
-    if (ndesc->access##ter != NULL) {                                          \
-      napi_value access##ter;                                                  \
-      status = napi_create_function(env, #access "ter", 6, ndesc->access##ter, \
-                                    ndesc->data, &access##ter);                \
-      if (status != napi_ok)                                                   \
-        return status;                                                         \
-      jdesc->is_##access##_defined = true;                                     \
-      jdesc->access##ter = AS_JERRY_VALUE(access##ter);                        \
-      /** jerryscript asserts xor is_writable_defined and accessors */         \
-      jdesc->is_writable_defined = false;                                      \
-    }                                                                          \
-  } while (0)
+  if (ndesc->getter != NULL) {
+    napi_value getter;
+    status = napi_create_function(env, "getter", 6, ndesc->getter, ndesc->data,
+                                  &getter);
+    if (status != napi_ok)
+      return status;
+    jdesc->is_get_defined = true;
+    jdesc->getter = AS_JERRY_VALUE(getter);
+    /** jerryscript asserts xor is_writable_defined and accessors */
+    jdesc->is_writable_defined = false;
+  }
 
-  JACCESSOR_FROM_NAPI_ATTR(get);
-  JACCESSOR_FROM_NAPI_ATTR(set);
-
-#undef JACCESSOR_FROM_NAPI_ATTR
+  if (ndesc->setter != NULL) {
+    napi_value setter;
+    status = napi_create_function(env, "setter", 6, ndesc->setter, ndesc->data,
+                                  &setter);
+    if (status != napi_ok)
+      return status;
+    jdesc->is_set_defined = true;
+    jdesc->setter = AS_JERRY_VALUE(setter);
+    /** jerryscript asserts xor is_writable_defined and accessors */
+    jdesc->is_writable_defined = false;
+  }
 
   NAPI_RETURN(napi_ok);
 }
