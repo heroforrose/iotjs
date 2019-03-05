@@ -1202,6 +1202,8 @@
     { "name": "napi_arguments_return.test.js"},
     { "name": "napi_arguments_throw.test.js"},
     { "name": "napi_construct.test.js"},
+    { "name": "test_napi_conversions.js"},
+    { "name": "napi_handle_scope.js"},
     { "name": "napi_string.test.js" },
     { "name": "napi.test.js" },
     { "name": "test_napi_throw.js" },

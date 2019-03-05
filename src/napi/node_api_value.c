@@ -18,6 +18,8 @@
 #include "internal/node_api_internal.h"
 #include "modules/iotjs_module_buffer.h"
 
+#include <math.h>
+
 napi_status napi_create_array(napi_env env, napi_value* result) {
   NAPI_TRY_ENV(env);
   JERRYX_CREATE(jval, jerry_create_array(0));
@@ -137,18 +139,29 @@ DEF_NAPI_NUMBER_CONVERT_FROM_C_TYPE(int64_t, int64);
 DEF_NAPI_NUMBER_CONVERT_FROM_C_TYPE(double, double);
 #undef DEF_NAPI_NUMBER_CONVERT_FROM_C_TYPE
 
+napi_status napi_get_value_double(napi_env env, napi_value value,
+                                  double* result) {
+  NAPI_TRY_ENV(env);
+  jerry_value_t jval = AS_JERRY_VALUE(value);
+  NAPI_TRY_TYPE(number, jval);
+  NAPI_ASSIGN(result, jerry_get_number_value(jval));
+  NAPI_RETURN(napi_ok);
+}
+
 #define DEF_NAPI_NUMBER_CONVERT_FROM_NVALUE(type, name)             \
   napi_status napi_get_value_##name(napi_env env, napi_value value, \
                                     type* result) {                 \
     NAPI_TRY_ENV(env);                                              \
     jerry_value_t jval = AS_JERRY_VALUE(value);                     \
     NAPI_TRY_TYPE(number, jval);                                    \
-    double num_val = jerry_get_number_value(jval);                  \
-    NAPI_ASSIGN(result, num_val);                                   \
+    double num = jerry_get_number_value(jval);                      \
+    if (isinf(num) || isnan(num)) {                                 \
+      num = 0;                                                      \
+    }                                                               \
+    NAPI_ASSIGN(result, num);                                       \
     NAPI_RETURN(napi_ok);                                           \
   }
 
-DEF_NAPI_NUMBER_CONVERT_FROM_NVALUE(double, double);
 DEF_NAPI_NUMBER_CONVERT_FROM_NVALUE(int32_t, int32);
 DEF_NAPI_NUMBER_CONVERT_FROM_NVALUE(int64_t, int64);
 DEF_NAPI_NUMBER_CONVERT_FROM_NVALUE(uint32_t, uint32);
@@ -265,18 +278,26 @@ napi_status napi_get_undefined(napi_env env, napi_value* result) {
   NAPI_RETURN(napi_ok);
 }
 
+napi_status napi_coerce_to_bool(napi_env env, napi_value value,
+                                napi_value* result) {
+  NAPI_TRY_ENV(env);
+  jerry_value_t jval = AS_JERRY_VALUE(value);
+  bool res = jerry_value_to_boolean(jval);
+  JERRYX_CREATE(jval_result, jerry_create_boolean(res));
+  NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_result));
+  NAPI_RETURN(napi_ok);
+}
+
 #define DEF_NAPI_COERCE_TO(type, alias)                             \
   napi_status napi_coerce_to_##type(napi_env env, napi_value value, \
                                     napi_value* result) {           \
     NAPI_TRY_ENV(env);                                              \
     jerry_value_t jval = AS_JERRY_VALUE(value);                     \
-    NAPI_TRY_TYPE(alias, jval);                                     \
     JERRYX_CREATE(jval_result, jerry_value_to_##alias(jval));       \
     NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_result));                \
     NAPI_RETURN(napi_ok);                                           \
   }
 
-DEF_NAPI_COERCE_TO(bool, boolean);
 DEF_NAPI_COERCE_TO(number, number);
 DEF_NAPI_COERCE_TO(object, object);
 DEF_NAPI_COERCE_TO(string, string);
