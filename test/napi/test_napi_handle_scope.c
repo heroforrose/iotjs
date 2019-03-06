@@ -40,7 +40,8 @@ static napi_value new_scope_escape(napi_env env, napi_callback_info info) {
   return escapee;
 }
 
-static napi_value new_scope_escape_twice(napi_env env, napi_callback_info info) {
+static napi_value new_scope_escape_twice(napi_env env,
+                                         napi_callback_info info) {
   napi_escapable_handle_scope scope;
   napi_value output = NULL;
   napi_value escapee = NULL;
@@ -55,7 +56,8 @@ static napi_value new_scope_escape_twice(napi_env env, napi_callback_info info) 
   return NULL;
 }
 
-static napi_value new_scope_with_exception(napi_env env, napi_callback_info info) {
+static napi_value new_scope_with_exception(napi_env env,
+                                           napi_callback_info info) {
   napi_handle_scope scope;
   size_t argc;
   napi_value exception_function;
@@ -66,13 +68,12 @@ static napi_value new_scope_with_exception(napi_env env, napi_callback_info info
   NAPI_CALL(env, napi_create_object(env, &output));
 
   argc = 1;
-  NAPI_CALL(env, napi_get_cb_info(
-      env, info, &argc, &exception_function, NULL, NULL));
+  NAPI_CALL(env, napi_get_cb_info(env, info, &argc, &exception_function, NULL,
+                                  NULL));
 
-  status = napi_call_function(
-      env, output, exception_function, 0, NULL, NULL);
+  status = napi_call_function(env, output, exception_function, 0, NULL, NULL);
   NAPI_ASSERT(env, status == napi_pending_exception,
-      "Function should have thrown.");
+              "Function should have thrown.");
 
   // Closing a handle scope should still work while an exception is pending.
   NAPI_CALL(env, napi_close_handle_scope(env, scope));
@@ -87,8 +88,9 @@ static napi_value init(napi_env env, napi_value exports) {
     DECLARE_NAPI_PROPERTY("NewScopeWithException", new_scope_with_exception),
   };
 
-  NAPI_CALL(env, napi_define_properties(
-      env, exports, sizeof(properties) / sizeof(*properties), properties));
+  NAPI_CALL(env, napi_define_properties(env, exports, sizeof(properties) /
+                                                          sizeof(*properties),
+                                        properties));
 
   return exports;
 }

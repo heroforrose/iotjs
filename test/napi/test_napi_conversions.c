@@ -77,12 +77,12 @@ static napi_value AsString(napi_env env, napi_callback_info info) {
   NAPI_CALL(env, napi_get_cb_info(env, info, &argc, args, NULL, NULL));
 
   char value[100];
-  NAPI_CALL(env,
-    napi_get_value_string_utf8(env, args[0], value, sizeof(value), NULL));
+  NAPI_CALL(env, napi_get_value_string_utf8(env, args[0], value, sizeof(value),
+                                            NULL));
 
   napi_value output;
-  NAPI_CALL(env, napi_create_string_utf8(
-      env, value, NAPI_AUTO_LENGTH, &output));
+  NAPI_CALL(env,
+            napi_create_string_utf8(env, value, NAPI_AUTO_LENGTH, &output));
 
   return output;
 }
@@ -145,8 +145,9 @@ static napi_value Init(napi_env env, napi_value exports) {
     DECLARE_NAPI_PROPERTY("toString", ToString),
   };
 
-  NAPI_CALL(env, napi_define_properties(
-      env, exports, sizeof(descriptors) / sizeof(*descriptors), descriptors));
+  NAPI_CALL(env, napi_define_properties(env, exports, sizeof(descriptors) /
+                                                          sizeof(*descriptors),
+                                        descriptors));
 
   return exports;
 }

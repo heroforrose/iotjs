@@ -120,7 +120,8 @@ assert.deepStrictEqual = assert.deepStrictEqual || function(expected, value) {
   }
 }
 
-assert.notDeepStrictEqual = assert.notDeepStrictEqual || function(expected, value) {
+assert.notDeepStrictEqual = assert.notDeepStrictEqual ||
+function(expected, value) {
   if ((typeof expected !== typeof value)
       || (Object.keys(value).length !== Object.keys(expected).length)) {
     return;
@@ -168,6 +169,8 @@ assert.strictEqual('0', test.toString(0));
 assert.strictEqual('1.1', test.toString(1.1));
 assert.strictEqual('NaN', test.toString(Number.NaN));
 assert.strictEqual('[object Object]', test.toString({}));
-assert.strictEqual('test', test.toString({ toString: function() { return 'test' }}));
+assert.strictEqual('test', test.toString({
+  toString: function() { return 'test' }
+}));
 assert.strictEqual('', test.toString([]));
 assert.strictEqual('1,2,3', test.toString([ 1, 2, 3 ]));

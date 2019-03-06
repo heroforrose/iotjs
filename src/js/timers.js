@@ -69,10 +69,10 @@ Timeout.prototype.unref = function() {
 };
 // TODO: add proper name
 var types = {
-  setTimeout : 0,
-  setInterval : 1,
-  setImmediate : 2,
-}
+  setTimeout: 0,
+  setInterval: 1,
+  setImmediate: 2,
+};
 
 function timeoutConfigurator(type, callback, delay) {
   if (!util.isFunction(callback)) {

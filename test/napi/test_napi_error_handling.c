@@ -1,7 +1,7 @@
-#include <node_api.h>
 #include <assert.h>
-#include "common.h"
+#include <node_api.h>
 #include <stdio.h>
+#include "common.h"
 
 #define ERROR_CODE "ErrorCODE"
 #define ERROR_MSG "ErrorMSG"
@@ -158,7 +158,8 @@ napi_value Init(napi_env env, napi_value exports) {
   SET_NAMED_METHOD(env, exports, "CreateError", CreateError);
   SET_NAMED_METHOD(env, exports, "CreateTypeError", CreateTypeError);
   SET_NAMED_METHOD(env, exports, "CreateRangeError", CreateRangeError);
-  SET_NAMED_METHOD(env, exports, "GetandClearLastException", GetandClearLastException);
+  SET_NAMED_METHOD(env, exports, "GetandClearLastException",
+                   GetandClearLastException);
   SET_NAMED_METHOD(env, exports, "IsExceptionPending", IsExceptionPending);
   SET_NAMED_METHOD(env, exports, "FatalException", FatalException);
 

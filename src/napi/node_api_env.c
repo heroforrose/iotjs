@@ -141,7 +141,7 @@ DEF_NAPI_THROWS(type_error, JERRY_ERROR_TYPE);
 DEF_NAPI_THROWS(range_error, JERRY_ERROR_RANGE);
 #undef DEF_NAPI_THROWS
 
-//This method invokes an 'uncaughtException', only when jerry-debugger is off
+// This method invokes an 'uncaughtException', only when jerry-debugger is off
 napi_status napi_fatal_exception(napi_env env, napi_value err) {
   NAPI_TRY_ENV(env);
   NAPI_TRY_NO_PENDING_EXCEPTION(env);
@@ -190,7 +190,7 @@ napi_status napi_get_and_clear_last_exception(napi_env env,
   }
 
   jerry_value_t jval_err =
-                jerry_get_value_from_error(AS_JERRY_VALUE(error), true);
+      jerry_get_value_from_error(AS_JERRY_VALUE(error), true);
 
   NAPI_ASSIGN(result, AS_NAPI_VALUE(jval_err));
   /** should not clear last error info */

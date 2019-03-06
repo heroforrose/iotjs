@@ -183,7 +183,8 @@ class TestRunner(object):
 
         if not self.n_api:
             for test in testsets["napi"]:
-                test.update({"skip":['all'], "reason": "Required `--n-api` to run N-API tests"})
+                test.update({"skip":['all'], "reason":
+                             "Required `--n-api` to run N-API tests"})
 
         for testset, tests in testsets.items():
             self.run_testset(testset, tests)

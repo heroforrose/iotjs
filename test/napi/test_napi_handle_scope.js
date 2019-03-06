@@ -10,7 +10,9 @@ testHandleScope.NewScopeEscapeTwice();
 
 assert.throws(
   function() {
-    testHandleScope.NewScopeWithException(function() { throw new RangeError(); });
+    testHandleScope.NewScopeWithException(function() {
+      throw new RangeError();
+    });
   },
   RangeError
 );

@@ -372,8 +372,7 @@ napi_status napi_is_error(napi_env env, napi_value value, bool* result) {
   NAPI_TRY_ENV(env);
   jerry_value_t jval = AS_JERRY_VALUE(value);
   jerry_value_t jval_global = jerry_get_global_object();
-  jerry_value_t jval_error =
-      iotjs_jval_get_property(jval_global, "Error");
+  jerry_value_t jval_error = iotjs_jval_get_property(jval_global, "Error");
   NAPI_ASSIGN(result, jerry_value_instanceof(jval, jval_error));
   jerry_release_value(jval_error);
   jerry_release_value(jval_global);

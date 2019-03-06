@@ -448,6 +448,10 @@ set(IOTJS_INCLUDE_DIRS
   ${TUV_INCLUDE_DIR}
 )
 
+if (ENABLE_NAPI)
+  list(APPEND IOTJS_INCLUDE_DIRS ${IOTJS_SOURCE_DIR}/napi)
+endif()
+
 if(NOT BUILD_LIB_ONLY)
   if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
     iotjs_add_link_flags("-Xlinker -map -Xlinker iotjs.map")
