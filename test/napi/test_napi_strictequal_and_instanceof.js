@@ -1,6 +1,6 @@
 'use strict';
 var assert = require('assert');
-var napi_test = require('./build/Release/napi_test.node');
+var napi_test = require('./build/Release/test_napi_strictequal_and_instanceof.node');
 
 assert(napi_test !== null);
 assert.strictEqual(typeof napi_test, 'object');

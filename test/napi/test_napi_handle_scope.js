@@ -1,6 +1,6 @@
 
 var assert = require('assert');
-var testHandleScope = require('./build/Release/napi_handle_scope.node');
+var testHandleScope = require('./build/Release/test_napi_handle_scope.node');
 
 testHandleScope.NewScope();
 

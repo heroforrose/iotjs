@@ -1198,17 +1198,18 @@
     }
   ],
   "napi": [
-    { "name": "napi_arguments_return_this.test.js"},
-    { "name": "napi_arguments_return.test.js"},
-    { "name": "napi_arguments_throw.test.js"},
-    { "name": "napi_construct.test.js"},
-    { "name": "test_napi_conversions.js"},
-    { "name": "napi_handle_scope.js"},
-    { "name": "napi_string.test.js" },
-    { "name": "napi.test.js" },
-    { "name": "test_napi_throw.js" },
-    { "name": "test_napi_throw_error.js" },
+    { "name": "test_napi_arguments_return.js" },
+    { "name": "test_napi_arguments_return_this.js" },
+    { "name": "test_napi_arguments_throw.js" },
+    { "name": "test_napi_construct.js" },
+    { "name": "test_napi_conversions.js" },
     { "name": "test_napi_create_error.js" },
-    { "name": "test_napi_exception.js" }
+    { "name": "test_napi_exception.js" },
+    { "name": "test_napi_handle_scope.js" },
+    { "name": "test_napi_is_error.js" },
+    { "name": "test_napi_strictequal_and_instanceof.js" },
+    { "name": "test_napi_string.js" },
+    { "name": "test_napi_throw_error.js" },
+    { "name": "test_napi_throw.js" }
   ]
 }

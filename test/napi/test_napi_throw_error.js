@@ -1,4 +1,4 @@
-var addon = require('./build/Release/napi_error_handling');
+var addon = require('./build/Release/test_napi_error_handling');
 var assert = require('assert');
 
 var error;

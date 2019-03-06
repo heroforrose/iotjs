@@ -1,6 +1,6 @@
 'use strict';
 var assert = require('assert');
-var test = require('./build/Release/napi_arguments.node');
+var test = require('./build/Release/test_napi_arguments.node');
 
 try {
   test.Throw(new Error('foo'));

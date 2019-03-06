@@ -1,32 +1,32 @@
 {
   "targets": [
     {
-      "target_name": "napi_test",
-      "sources": [ "napi.test.c" ]
+      "target_name": "test_napi_strictequal_and_instanceof",
+      "sources": [ "test_napi_strictequal_and_instanceof.c" ]
     },
     {
-      "target_name": "napi_arguments",
-      "sources": [ "napi_arguments.c" ]
+      "target_name": "test_napi_arguments",
+      "sources": [ "test_napi_arguments.c" ]
     },
     {
-      "target_name": "napi_construct",
-      "sources": [ "napi_construct.c" ]
+      "target_name": "test_napi_construct",
+      "sources": [ "test_napi_construct.c" ]
     },
     {
       "target_name": "test_napi_conversions",
       "sources": [ "test_napi_conversions.c" ]
     },
     {
-      "target_name": "napi_error_handling",
-      "sources": [ "napi_error_handling.c" ]
+      "target_name": "test_napi_error_handling",
+      "sources": [ "test_napi_error_handling.c" ]
     },
     {
-      "target_name": "napi_handle_scope",
-      "sources": [ "napi_handle_scope.c" ]
+      "target_name": "test_napi_handle_scope",
+      "sources": [ "test_napi_handle_scope.c" ]
     },
     {
-      "target_name": "napi_string",
-      "sources": [ "napi_string.c" ]
+      "target_name": "test_napi_string",
+      "sources": [ "test_napi_string.c" ]
     }
   ]
 }
